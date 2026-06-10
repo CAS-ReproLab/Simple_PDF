@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Simple PDF</title>
+    <link rel="stylesheet" href="styles/main.css">
+  </head>
+  <body>
+    <header class="app-toolbar">
+      <div class="toolbar-group file-actions">
+        <button id="open-pdf-btn" type="button">Open PDF</button>
+        <button id="open-annotations-btn" type="button" disabled>Open JSON</button>
+        <button id="save-annotations-btn" type="button" disabled>Save JSON</button>
+        <button id="export-pdf-btn" type="button" disabled title="Saves annotation data inside the PDF so it stays editable in this app.">Save PDF</button>
+        <button id="flatten-pdf-btn" type="button" disabled title="Burns visible annotation marks into a copy for ordinary PDF readers.">Flatten PDF</button>
+      </div>
+
+      <div class="toolbar-group tool-actions" role="group" aria-label="Annotation tools">
+        <button class="tool-button is-active" type="button" data-tool="select">Select</button>
+        <button class="tool-button" type="button" data-tool="highlight">Highlight</button>
+        <button class="tool-button" type="button" data-tool="comment">Comment</button>
+        <button id="delete-annotation-btn" type="button" disabled>Delete</button>
+      </div>
+
+      <div class="toolbar-group view-actions">
+        <button id="zoom-out-btn" type="button" disabled>-</button>
+        <span id="zoom-label" class="zoom-label">100%</span>
+        <button id="zoom-in-btn" type="button" disabled>+</button>
+        <button id="fit-width-btn" type="button" disabled>Fit width</button>
+      </div>
+    </header>
+
+    <main class="app-shell">
+      <section class="viewer-panel" aria-label="PDF viewer">
+        <input id="pdf-input" class="visually-hidden" type="file" accept="application/pdf">
+        <input id="annotations-input" class="visually-hidden" type="file" accept="application/json,.json">
+
+        <div id="empty-state" class="empty-state">
+          <h1>Simple PDF</h1>
+          <p>Open a PDF to start reading, highlighting, and commenting.</p>
+        </div>
+
+        <div id="viewer" class="pdf-viewer" aria-live="polite"></div>
+      </section>
+
+      <aside class="sidebar" aria-label="Comments">
+        <section class="editor-panel">
+          <h2>Selected Annotation</h2>
+          <div id="editor-empty" class="muted">Select a highlight or comment to edit it.</div>
+          <form id="annotation-editor" class="annotation-editor is-hidden">
+            <label>
+              Comment
+              <textarea id="comment-text" rows="5" placeholder="Add a note"></textarea>
+            </label>
+            <label>
+              Color
+              <input id="annotation-color" type="color" value="#fff176">
+            </label>
+            <button type="submit">Update</button>
+          </form>
+        </section>
+
+        <section class="comments-panel">
+          <h2>Comments</h2>
+          <ol id="comments-list" class="comments-list"></ol>
+        </section>
+      </aside>
+    </main>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <script src="vendor/pdfjs/pdf.min.js"></script>
+    <script src="vendor/pdf-lib/pdf-lib.min.js"></script>
+    <script src="src/annotations.js"></script>
+    <script src="src/storage.js"></script>
+    <script src="src/export-pdf.js"></script>
+    <script src="src/pdf-viewer.js"></script>
+    <script src="src/ui.js"></script>
+    <script src="src/app.js"></script>
+  </body>
+</html>
