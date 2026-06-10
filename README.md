@@ -60,6 +60,7 @@ This still only runs on your computer. It does not publish the app to the intern
 - Add point comments.
 - Edit comment text and annotation colors.
 - Remove annotations from the toolbar or the comments sidebar.
+- Toggle light or dark mode, with the preference saved in this browser.
 - Save annotations as JSON.
 - Reload annotation JSON.
 - Save an editable Simple PDF copy that restores annotations when reopened in this app.

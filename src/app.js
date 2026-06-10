@@ -3,6 +3,7 @@
   const Storage = window.SimplePDFStorage;
   const Exporter = window.SimplePDFExport;
   const UI = window.SimplePDFUI;
+  const Theme = window.SimplePDFTheme;
   const { PDFViewer } = window.SimplePDFViewer;
 
   const elements = {
@@ -21,6 +22,7 @@
     zoomOutBtn: document.getElementById("zoom-out-btn"),
     zoomInBtn: document.getElementById("zoom-in-btn"),
     fitWidthBtn: document.getElementById("fit-width-btn"),
+    themeToggleBtn: document.getElementById("theme-toggle-btn"),
     zoomLabel: document.getElementById("zoom-label"),
     commentsList: document.getElementById("comments-list"),
     editorEmpty: document.getElementById("editor-empty"),
@@ -52,6 +54,7 @@
   elements.zoomOutBtn.addEventListener("click", () => updateZoom(viewer.scale - 0.15));
   elements.zoomInBtn.addEventListener("click", () => updateZoom(viewer.scale + 0.15));
   elements.fitWidthBtn.addEventListener("click", fitWidth);
+  elements.themeToggleBtn.addEventListener("click", () => Theme.toggleTheme(elements.themeToggleBtn));
 
   elements.toolButtons.forEach((button) => {
     button.addEventListener("click", () => setActiveTool(button.dataset.tool));
@@ -429,5 +432,6 @@
     return container.innerHTML;
   }
 
+  Theme.initialize(elements.themeToggleBtn);
   renderSidebar();
 })();

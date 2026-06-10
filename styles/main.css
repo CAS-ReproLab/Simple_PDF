@@ -8,7 +8,43 @@
   --accent-dark: #174d4a;
   --mark: #fff176;
   --danger: #b42318;
+  --button-bg: #ffffff;
+  --button-disabled-bg: #f6f7f7;
+  --button-disabled-ink: #9ca6ae;
+  --toolbar-bg: rgba(255, 255, 255, 0.94);
+  --sidebar-bg: #fbfcfa;
+  --field-bg: #ffffff;
+  --selected-bg: #edf7f4;
+  --selected-outline: rgba(37, 111, 108, 0.18);
+  --toast-bg: #1f2933;
+  --toast-ink: #ffffff;
+  --comment-marker-ring: #ffffff;
+  --pdf-page-bg: #ffffff;
   --shadow: 0 12px 28px rgba(25, 36, 40, 0.14);
+}
+
+body[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #151814;
+  --panel: #20251f;
+  --ink: #eef2ea;
+  --muted: #aeb9ad;
+  --line: #3b453d;
+  --accent: #54b6aa;
+  --accent-dark: #8be0d2;
+  --danger: #ff9b8f;
+  --button-bg: #252b24;
+  --button-disabled-bg: #1c211c;
+  --button-disabled-ink: #687367;
+  --toolbar-bg: rgba(31, 37, 31, 0.94);
+  --sidebar-bg: #1c211b;
+  --field-bg: #252b24;
+  --selected-bg: #203a36;
+  --selected-outline: rgba(139, 224, 210, 0.26);
+  --toast-bg: #eef2ea;
+  --toast-ink: #151814;
+  --comment-marker-ring: #151814;
+  --shadow: 0 12px 30px rgba(0, 0, 0, 0.36);
 }
 
 * {
@@ -36,7 +72,7 @@ button {
   border-radius: 6px;
   padding: 0 12px;
   color: var(--ink);
-  background: #fff;
+  background: var(--button-bg);
   cursor: pointer;
 }
 
@@ -45,9 +81,9 @@ button:hover:not(:disabled) {
 }
 
 button:disabled {
-  color: #9ca6ae;
+  color: var(--button-disabled-ink);
   cursor: not-allowed;
-  background: #f6f7f7;
+  background: var(--button-disabled-bg);
 }
 
 .app-toolbar {
@@ -61,7 +97,7 @@ button:disabled {
   min-height: 58px;
   padding: 10px 14px;
   border-bottom: 1px solid var(--line);
-  background: rgba(255, 255, 255, 0.94);
+  background: var(--toolbar-bg);
   backdrop-filter: blur(10px);
 }
 
@@ -76,6 +112,10 @@ button:disabled {
   color: #fff;
   border-color: var(--accent);
   background: var(--accent);
+}
+
+#theme-toggle-btn {
+  min-width: 62px;
 }
 
 .zoom-label {
@@ -129,7 +169,7 @@ button:disabled {
 .pdf-page {
   position: relative;
   overflow: hidden;
-  background: #fff;
+  background: var(--pdf-page-bg);
   box-shadow: var(--shadow);
 }
 
@@ -162,7 +202,7 @@ button:disabled {
   width: 22px;
   height: 22px;
   transform: translate(-50%, -50%);
-  border: 2px solid #fff;
+  border: 2px solid var(--comment-marker-ring);
   border-radius: 50%;
   background: var(--accent);
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.22);
@@ -176,12 +216,12 @@ button:disabled {
   width: 8px;
   height: 8px;
   border-radius: 50%;
-  background: #fff;
+  background: var(--comment-marker-ring);
 }
 
 .annotation.is-selected {
   border-color: var(--accent-dark);
-  outline: 2px solid rgba(37, 111, 108, 0.18);
+  outline: 2px solid var(--selected-outline);
 }
 
 .draft-highlight {
@@ -200,7 +240,7 @@ button:disabled {
   padding: 18px;
   overflow: hidden;
   border-left: 1px solid var(--line);
-  background: #fbfcfa;
+  background: var(--sidebar-bg);
 }
 
 .editor-panel,
@@ -239,7 +279,7 @@ textarea {
   border-radius: 6px;
   padding: 10px;
   color: var(--ink);
-  background: #fff;
+  background: var(--field-bg);
 }
 
 input[type="color"] {
@@ -247,7 +287,7 @@ input[type="color"] {
   height: 36px;
   border: 1px solid var(--line);
   border-radius: 6px;
-  background: #fff;
+  background: var(--field-bg);
 }
 
 .comments-list {
@@ -280,7 +320,7 @@ input[type="color"] {
 
 .comment-item.is-selected .comment-select-button {
   border-color: var(--accent);
-  background: #edf7f4;
+  background: var(--selected-bg);
 }
 
 .comment-remove-button {
@@ -311,8 +351,8 @@ input[type="color"] {
   max-width: min(360px, calc(100vw - 36px));
   padding: 12px 14px;
   border-radius: 6px;
-  color: #fff;
-  background: var(--ink);
+  color: var(--toast-ink);
+  background: var(--toast-bg);
   opacity: 0;
   transform: translateY(8px);
   pointer-events: none;
