@@ -17,6 +17,7 @@
 
 body {
   margin: 0;
+  overflow: hidden;
   min-height: 100vh;
   color: var(--ink);
   background: var(--bg);
@@ -86,12 +87,15 @@ button:disabled {
 .app-shell {
   display: grid;
   grid-template-columns: minmax(0, 1fr) 320px;
-  min-height: calc(100vh - 58px);
+  height: calc(100vh - 58px);
+  min-height: 0;
+  overflow: hidden;
 }
 
 .viewer-panel {
   position: relative;
   min-width: 0;
+  min-height: 0;
   padding: 24px;
   overflow: auto;
 }
@@ -192,7 +196,9 @@ button:disabled {
   grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
   min-width: 0;
+  min-height: 0;
   padding: 18px;
+  overflow: hidden;
   border-left: 1px solid var(--line);
   background: #fbfcfa;
 }
@@ -200,6 +206,12 @@ button:disabled {
 .editor-panel,
 .comments-panel {
   min-width: 0;
+  min-height: 0;
+}
+
+.comments-panel {
+  display: grid;
+  grid-template-rows: auto minmax(0, 1fr);
 }
 
 .editor-panel h2,
@@ -241,7 +253,8 @@ input[type="color"] {
 .comments-list {
   display: grid;
   gap: 8px;
-  max-height: calc(100vh - 290px);
+  align-content: start;
+  min-height: 0;
   margin: 0;
   padding: 0;
   overflow: auto;
@@ -317,8 +330,20 @@ input[type="color"] {
 }
 
 @media (max-width: 900px) {
+  body {
+    overflow: auto;
+  }
+
   .app-shell {
     grid-template-columns: 1fr;
+    height: auto;
+    min-height: calc(100vh - 58px);
+    overflow: visible;
+  }
+
+  .viewer-panel,
+  .sidebar {
+    overflow: visible;
   }
 
   .sidebar {

@@ -11,9 +11,11 @@
       this.pdfDocument = null;
       this.scale = 1;
       this.pages = new Map();
+      this.renderJobId = 0;
     }
 
     async load(pdfBytes) {
+      this.renderJobId += 1;
       this.clear();
       const data = new Uint8Array(pdfBytes.slice(0));
       this.pdfDocument = await pdfjsLib.getDocument({ data }).promise;
@@ -34,17 +36,27 @@
     }
 
     async renderAll() {
+      const renderJobId = (this.renderJobId += 1);
       this.clear();
 
       for (let pageNumber = 1; pageNumber <= this.pdfDocument.numPages; pageNumber += 1) {
-        await this.renderPage(pageNumber);
+        const rendered = await this.renderPage(pageNumber, renderJobId);
+        if (!rendered) {
+          return;
+        }
       }
 
-      this.viewerElement.dispatchEvent(new CustomEvent("pages-rendered"));
+      if (renderJobId === this.renderJobId) {
+        this.viewerElement.dispatchEvent(new CustomEvent("pages-rendered"));
+      }
     }
 
-    async renderPage(pageNumber) {
+    async renderPage(pageNumber, renderJobId) {
       const page = await this.pdfDocument.getPage(pageNumber);
+      if (renderJobId !== this.renderJobId) {
+        return false;
+      }
+
       const viewport = page.getViewport({ scale: this.scale });
       const outputScale = window.devicePixelRatio || 1;
 
@@ -65,6 +77,10 @@
       overlay.className = "annotation-layer";
       overlay.dataset.page = String(pageNumber);
 
+      if (renderJobId !== this.renderJobId) {
+        return false;
+      }
+
       pageElement.append(canvas, overlay);
       this.viewerElement.append(pageElement);
 
@@ -76,6 +92,10 @@
       };
 
       await page.render(renderContext).promise;
+      if (renderJobId !== this.renderJobId) {
+        pageElement.remove();
+        return false;
+      }
 
       this.pages.set(pageNumber, {
         page,
@@ -85,6 +105,8 @@
         width: viewport.width,
         height: viewport.height
       });
+
+      return true;
     }
 
     getPageInfo(pageNumber) {
