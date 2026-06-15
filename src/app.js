@@ -275,8 +275,21 @@
   }
 
   async function fitWidth() {
-    const scale = viewer.getFitWidthScale(elements.viewerPanel.clientWidth);
+    const scale = viewer.getFitWidthScale(getViewerPanelContentWidth());
     await updateZoom(scale);
+    resetHorizontalViewerScroll();
+  }
+
+  function getViewerPanelContentWidth() {
+    const styles = window.getComputedStyle(elements.viewerPanel);
+    const horizontalPadding = parseFloat(styles.paddingLeft) + parseFloat(styles.paddingRight);
+    return elements.viewerPanel.clientWidth - horizontalPadding;
+  }
+
+  function resetHorizontalViewerScroll() {
+    requestAnimationFrame(() => {
+      elements.viewerPanel.scrollLeft = 0;
+    });
   }
 
   function renderAll() {

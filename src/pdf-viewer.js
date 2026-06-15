@@ -29,7 +29,7 @@
     }
 
     async setScale(scale) {
-      this.scale = Math.max(0.5, Math.min(2.5, scale));
+      this.scale = Math.max(0.1, Math.min(2.5, scale));
       if (this.pdfDocument) {
         await this.renderAll();
       }
@@ -117,14 +117,16 @@
       return this.pdfDocument ? this.pdfDocument.numPages : 0;
     }
 
-    getFitWidthScale(containerWidth) {
-      const firstPage = this.pages.get(1);
-      if (!firstPage) {
+    getFitWidthScale(availableWidth) {
+      if (!this.pages.size || availableWidth <= 0) {
         return this.scale;
       }
 
-      const padding = 48;
-      return Math.max(0.5, Math.min(2.5, (containerWidth - padding) / (firstPage.width / this.scale)));
+      const widestPageWidth = Math.max(
+        ...Array.from(this.pages.values(), (pageInfo) => pageInfo.width / this.scale)
+      );
+
+      return Math.max(0.1, Math.min(2.5, availableWidth / widestPageWidth));
     }
   }
 
