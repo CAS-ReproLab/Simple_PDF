@@ -143,7 +143,9 @@ button:disabled {
 .pdf-viewer {
   display: grid;
   gap: 22px;
-  justify-content: center;
+  width: max-content;
+  min-width: 100%;
+  justify-items: center;
   padding-bottom: 40px;
 }
 
