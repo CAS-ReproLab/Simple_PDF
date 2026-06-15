@@ -46,6 +46,7 @@
       </section>
 
       <aside class="sidebar" aria-label="Comments">
+        <div id="sidebar-resizer" class="sidebar-resizer" role="separator" aria-orientation="vertical" aria-label="Resize comments panel" aria-valuemin="240" aria-valuemax="640" aria-valuenow="320" tabindex="0"></div>
         <section class="editor-panel">
           <h2>Selected Annotation</h2>
           <div id="editor-empty" class="muted">Select a highlight or comment to edit it.</div>
@@ -63,7 +64,13 @@
         </section>
 
         <section class="comments-panel">
-          <h2>Comments</h2>
+          <div class="comments-panel-header">
+            <h2>Comments</h2>
+            <label class="font-size-control">
+              Font
+              <input id="comment-font-size" type="range" min="12" max="20" step="1" value="14">
+            </label>
+          </div>
           <ol id="comments-list" class="comments-list"></ol>
         </section>
       </aside>

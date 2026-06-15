@@ -16,12 +16,15 @@
     annotationsInput: document.getElementById("annotations-input"),
     viewer: document.getElementById("viewer"),
     viewerPanel: document.querySelector(".viewer-panel"),
+    sidebar: document.querySelector(".sidebar"),
     emptyState: document.getElementById("empty-state"),
     toolButtons: Array.from(document.querySelectorAll(".tool-button")),
     deleteBtn: document.getElementById("delete-annotation-btn"),
     zoomOutBtn: document.getElementById("zoom-out-btn"),
     zoomInBtn: document.getElementById("zoom-in-btn"),
     fitWidthBtn: document.getElementById("fit-width-btn"),
+    sidebarResizer: document.getElementById("sidebar-resizer"),
+    commentFontSize: document.getElementById("comment-font-size"),
     themeToggleBtn: document.getElementById("theme-toggle-btn"),
     zoomLabel: document.getElementById("zoom-label"),
     commentsList: document.getElementById("comments-list"),
@@ -38,6 +41,16 @@
   let selectedAnnotationId = "";
   let currentFileName = "";
   let dragState = null;
+  let sidebarResizeState = null;
+
+  const preferences = {
+    sidebarWidthKey: "simplePdf.sidebarWidth",
+    commentFontSizeKey: "simplePdf.commentFontSize",
+    defaultSidebarWidth: 320,
+    minSidebarWidth: 240,
+    maxSidebarWidth: 640,
+    defaultCommentFontSize: 14
+  };
 
   elements.openPdfBtn.addEventListener("click", () => elements.pdfInput.click());
   elements.openAnnotationsBtn.addEventListener("click", () => elements.annotationsInput.click());
@@ -54,6 +67,9 @@
   elements.zoomOutBtn.addEventListener("click", () => updateZoom(viewer.scale - 0.15));
   elements.zoomInBtn.addEventListener("click", () => updateZoom(viewer.scale + 0.15));
   elements.fitWidthBtn.addEventListener("click", fitWidth);
+  elements.sidebarResizer.addEventListener("pointerdown", startSidebarResize);
+  elements.sidebarResizer.addEventListener("keydown", resizeSidebarWithKeyboard);
+  elements.commentFontSize.addEventListener("input", updateCommentFontSize);
   elements.themeToggleBtn.addEventListener("click", () => Theme.toggleTheme(elements.themeToggleBtn));
 
   elements.toolButtons.forEach((button) => {
@@ -292,6 +308,108 @@
     });
   }
 
+  function startSidebarResize(event) {
+    if (window.matchMedia("(max-width: 900px)").matches) {
+      return;
+    }
+
+    event.preventDefault();
+    sidebarResizeState = {
+      pointerId: event.pointerId
+    };
+    document.body.classList.add("is-resizing-sidebar");
+    elements.sidebarResizer.setPointerCapture(event.pointerId);
+    elements.sidebarResizer.addEventListener("pointermove", resizeSidebar);
+    elements.sidebarResizer.addEventListener("pointerup", stopSidebarResize);
+    elements.sidebarResizer.addEventListener("pointercancel", stopSidebarResize);
+  }
+
+  function resizeSidebar(event) {
+    if (!sidebarResizeState || event.pointerId !== sidebarResizeState.pointerId) {
+      return;
+    }
+
+    setSidebarWidth(window.innerWidth - event.clientX);
+  }
+
+  function stopSidebarResize(event) {
+    if (!sidebarResizeState || event.pointerId !== sidebarResizeState.pointerId) {
+      return;
+    }
+
+    elements.sidebarResizer.removeEventListener("pointermove", resizeSidebar);
+    elements.sidebarResizer.removeEventListener("pointerup", stopSidebarResize);
+    elements.sidebarResizer.removeEventListener("pointercancel", stopSidebarResize);
+    document.body.classList.remove("is-resizing-sidebar");
+    sidebarResizeState = null;
+  }
+
+  function resizeSidebarWithKeyboard(event) {
+    const keySteps = {
+      ArrowLeft: 16,
+      ArrowRight: -16,
+      Home: preferences.maxSidebarWidth,
+      End: preferences.minSidebarWidth
+    };
+
+    if (!(event.key in keySteps)) {
+      return;
+    }
+
+    event.preventDefault();
+    const currentWidth = getCurrentSidebarWidth();
+    const width = event.key === "Home" || event.key === "End" ? keySteps[event.key] : currentWidth + keySteps[event.key];
+    setSidebarWidth(width);
+  }
+
+  function getCurrentSidebarWidth() {
+    return elements.viewerPanel.parentElement.getBoundingClientRect().right - elements.sidebar.getBoundingClientRect().left;
+  }
+
+  function setSidebarWidth(width) {
+    const maxWidth = Math.min(preferences.maxSidebarWidth, Math.round(window.innerWidth * 0.6));
+    const nextWidth = clamp(width, preferences.minSidebarWidth, maxWidth);
+    document.documentElement.style.setProperty("--sidebar-width", `${nextWidth}px`);
+    elements.sidebarResizer.setAttribute("aria-valuemax", String(maxWidth));
+    elements.sidebarResizer.setAttribute("aria-valuenow", String(nextWidth));
+    writePreference(preferences.sidebarWidthKey, nextWidth);
+  }
+
+  function updateCommentFontSize() {
+    const fontSize = clamp(Number(elements.commentFontSize.value), 12, 20);
+    document.documentElement.style.setProperty("--comment-font-size", `${fontSize}px`);
+    writePreference(preferences.commentFontSizeKey, fontSize);
+  }
+
+  function initializePreferences() {
+    const storedSidebarWidth = readPreference(preferences.sidebarWidthKey, preferences.defaultSidebarWidth);
+    const storedCommentFontSize = readPreference(preferences.commentFontSizeKey, preferences.defaultCommentFontSize);
+
+    setSidebarWidth(storedSidebarWidth);
+    elements.commentFontSize.value = String(clamp(storedCommentFontSize, 12, 20));
+    updateCommentFontSize();
+  }
+
+  function readPreference(key, fallback) {
+    try {
+      return Number(localStorage.getItem(key)) || fallback;
+    } catch (error) {
+      return fallback;
+    }
+  }
+
+  function writePreference(key, value) {
+    try {
+      localStorage.setItem(key, String(value));
+    } catch (error) {
+      // Preferences are helpful, but the app should still work when storage is unavailable.
+    }
+  }
+
+  function clamp(value, min, max) {
+    return Math.max(min, Math.min(max, value));
+  }
+
   function renderAll() {
     renderAnnotations();
     renderSidebar();
@@ -446,5 +564,6 @@
   }
 
   Theme.initialize(elements.themeToggleBtn);
+  initializePreferences();
   renderSidebar();
 })();

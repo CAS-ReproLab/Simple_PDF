@@ -1,4 +1,6 @@
 :root {
+  --sidebar-width: 320px;
+  --comment-font-size: 14px;
   --bg: #f3f4f1;
   --panel: #ffffff;
   --ink: #1f2933;
@@ -126,7 +128,7 @@ button:disabled {
 
 .app-shell {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 320px;
+  grid-template-columns: minmax(0, 1fr) var(--sidebar-width);
   height: calc(100vh - 58px);
   min-height: 0;
   overflow: hidden;
@@ -234,6 +236,7 @@ button:disabled {
 }
 
 .sidebar {
+  position: relative;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
   gap: 16px;
@@ -243,6 +246,39 @@ button:disabled {
   overflow: hidden;
   border-left: 1px solid var(--line);
   background: var(--sidebar-bg);
+}
+
+.sidebar-resizer {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  z-index: 20;
+  width: 10px;
+  cursor: col-resize;
+  touch-action: none;
+}
+
+.sidebar-resizer::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  width: 2px;
+  background: transparent;
+  transition: background 120ms ease;
+}
+
+.sidebar-resizer:hover::before,
+.sidebar-resizer:focus-visible::before,
+body.is-resizing-sidebar .sidebar-resizer::before {
+  background: var(--accent);
+}
+
+body.is-resizing-sidebar {
+  cursor: col-resize;
+  user-select: none;
 }
 
 .editor-panel,
@@ -256,10 +292,32 @@ button:disabled {
   grid-template-rows: auto minmax(0, 1fr);
 }
 
+.comments-panel-header {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  margin: 0 0 10px;
+}
+
 .editor-panel h2,
 .comments-panel h2 {
-  margin: 0 0 10px;
+  margin: 0;
   font-size: 0.95rem;
+}
+
+.font-size-control {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  color: var(--muted);
+  font-size: 0.78rem;
+  white-space: nowrap;
+}
+
+.font-size-control input {
+  width: 82px;
 }
 
 .annotation-editor {
@@ -300,6 +358,7 @@ input[type="color"] {
   margin: 0;
   padding: 0;
   overflow: auto;
+  font-size: var(--comment-font-size);
   list-style: none;
 }
 
@@ -333,7 +392,7 @@ input[type="color"] {
 
 .comment-page {
   color: var(--muted);
-  font-size: 0.78rem;
+  font-size: 0.86em;
 }
 
 .comment-text {
@@ -391,6 +450,10 @@ input[type="color"] {
   .sidebar {
     border-top: 1px solid var(--line);
     border-left: 0;
+  }
+
+  .sidebar-resizer {
+    display: none;
   }
 
   .comments-list {
